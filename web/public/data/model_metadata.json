@@ -1,0 +1,85 @@
+{
+  "experience_level": [
+    "EN",
+    "EX",
+    "MI",
+    "SE"
+  ],
+  "employment_type": [
+    "CT",
+    "FL",
+    "FT",
+    "PT"
+  ],
+  "company_size": [
+    "L",
+    "M",
+    "S"
+  ],
+  "remote_ratio": [
+    "0",
+    "100",
+    "50"
+  ],
+  "job_title": [
+    "AI Architect",
+    "AI Consultant",
+    "AI Product Manager",
+    "AI Research Scientist",
+    "AI Software Engineer",
+    "AI Specialist",
+    "Autonomous Systems Engineer",
+    "Computer Vision Engineer",
+    "Data Analyst",
+    "Data Engineer",
+    "Data Scientist",
+    "Deep Learning Engineer",
+    "Head of AI",
+    "ML Ops Engineer",
+    "Machine Learning Engineer",
+    "Machine Learning Researcher",
+    "NLP Engineer",
+    "Principal Data Scientist",
+    "Research Scientist",
+    "Robotics Engineer"
+  ],
+  "company_location": [
+    "Australia",
+    "Austria",
+    "Canada",
+    "China",
+    "Denmark",
+    "Finland",
+    "France",
+    "Germany",
+    "India",
+    "Ireland",
+    "Israel",
+    "Japan",
+    "Netherlands",
+    "Norway",
+    "Singapore",
+    "South Korea",
+    "Sweden",
+    "Switzerland",
+    "United Kingdom",
+    "United States"
+  ],
+  "industry": [
+    "Automotive",
+    "Consulting",
+    "Education",
+    "Energy",
+    "Finance",
+    "Gaming",
+    "Government",
+    "Healthcare",
+    "Manufacturing",
+    "Media",
+    "Real Estate",
+    "Retail",
+    "Technology",
+    "Telecommunications",
+    "Transportation"
+  ]
+}

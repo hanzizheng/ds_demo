@@ -1,0 +1,10 @@
+{
+  "name": "ai-job-analysis-root",
+  "private": true,
+  "scripts": {
+    "dev": "cd web && npm run dev",
+    "build": "cd web && npm run build",
+    "preview": "cd web && npm run preview",
+    "clean": "python3 scripts/clean_data.py"
+  }
+}

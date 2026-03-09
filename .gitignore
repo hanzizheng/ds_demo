@@ -1,0 +1,28 @@
+# Node
+node_modules/
+dist/
+web/node_modules/
+web/dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Vercel
+.vercel/
+
+# Ensure API models are tracked (they are needed for deployment)
+!api/model.pkl
+!api/encoders.pkl
