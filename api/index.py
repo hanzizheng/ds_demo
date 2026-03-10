@@ -1,20 +1,17 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
-import pandas as pd
-import numpy as np
 import os
+import math
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Vercel file path handling
-# On Vercel, files in the same directory as the function are accessible
 MODEL_PATH = os.path.join(os.path.dirname(__file__), 'model.pkl')
 ENCODERS_PATH = os.path.join(os.path.dirname(__file__), 'encoders.pkl')
 
-# Load model and encoders at startup
-# Note: In Serverless, this might happen on every cold start
+# Load model and encoders
 model = None
 encoders = None
 
@@ -39,36 +36,48 @@ def predict():
         data = request.json
         features = ['experience_level', 'employment_type', 'company_size', 'remote_ratio', 'job_title', 'company_location', 'industry']
         
-        # Prepare input DataFrame
-        input_data = {}
+        # Prepare input as a list of lists (what sklearn expects)
+        # Instead of pandas DataFrame, we construct the input array directly
+        # But wait, the model was trained with DataFrame feature names?
+        # XGBoost/LightGBM/Sklearn might warn or fail if feature names missing if trained with DF.
+        # However, usually passing a 2D numpy-like array (list of lists) works if order is correct.
+        
+        input_row = []
+        
         for feature in features:
             val = data.get(feature)
             if val is None:
                 return jsonify({'error': f'Missing feature: {feature}'}), 400
-            input_data[feature] = [val]
             
-        df = pd.DataFrame(input_data)
-        
-        # Encode features (Target Encoding Logic)
-        for col in features:
-            val = str(df[col][0])
-            encoder_info = encoders.get(col)
+            # Target Encoding Logic using raw dicts
+            val_str = str(val)
+            encoder_info = encoders.get(feature)
             
             if encoder_info:
                 mapping = encoder_info['mapping']
                 global_mean = encoder_info['global_mean']
                 
-                # Map value, fallback to global mean if unknown
-                encoded_val = mapping.get(val, global_mean)
-                df[col] = encoded_val
+                # Map value, fallback to global mean
+                encoded_val = mapping.get(val_str, global_mean)
+                input_row.append(encoded_val)
             else:
-                 return jsonify({'error': f'Encoder not found for {col}'}), 500
-                
-        # Predict (Result is in Log scale)
-        log_prediction = model.predict(df)[0]
+                 return jsonify({'error': f'Encoder not found for {feature}'}), 500
         
-        # Inverse Transform (Log -> Original)
-        prediction = np.expm1(log_prediction)
+        # Predict
+        # input_row is [f1, f2, ...]
+        # model.predict expects [[f1, f2, ...]]
+        
+        # Note: If model strictly requires pandas, we might need a workaround. 
+        # But VotingRegressor usually handles array-like inputs.
+        # Let's try passing list of lists.
+        
+        # IMPORTANT: XGBoost/LightGBM sometimes are picky about feature names if trained with them.
+        # If this fails, we might need a lightweight way to wrap it, but usually standard sklearn interface accepts arrays.
+        
+        log_prediction = model.predict([input_row])[0]
+        
+        # Inverse Transform (Log -> Original): expm1
+        prediction = math.exp(log_prediction) - 1
         
         return jsonify({
             'predicted_salary': round(float(prediction), 2),
@@ -78,6 +87,3 @@ def predict():
     except Exception as e:
         print(f"Prediction error: {e}")
         return jsonify({'error': str(e)}), 500
-
-# Vercel requires the app to be exposed
-# This file is named index.py so Vercel treats it as the entry point
